@@ -1,14 +1,14 @@
-function [I, J] = SPM_InfluenceCoeff(xi, yi, Xj, Yj, phi, S)
-NumPan = length(xi); %iteration variable
-I = zeros(NumPan, NumPan);
-J = zeros(NumPan, NumPan);
+function [I, J] = SPM_InfluenceCoeff(xi, yi, Xj, Yj, phi, S, numPan)
+numPan = length(xi); %iteration variable
+I = zeros(numPan, numPan);
+J = zeros(numPan, numPan);
 
 % xi & yi - vectors containing the x and y coordinates of the control
 % points
 
 %Defining Integral Terms:
-for i = 1:NumPan %iterating over the jth control point
-    for j = 1:NumPan %for each control point, iterate over j=1:n panels 
+for i = 1:numPan %iterating over the jth control point
+    for j = 1:numPan %for each control point, iterate over j=1:n panels 
         if (j~=i) %avoid singularity
             %all of the coefficient terms determined in the solution of the
             %geometric integrals 

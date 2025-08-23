@@ -1,4 +1,4 @@
-%========= NUMERICAL SOURCE PANEL METHOD CODE =========%
+ %========= NUMERICAL SOURCE PANEL METHOD CODE =========%
 clc; 
 clear;
 
@@ -21,7 +21,7 @@ def_foil = 'Use .dat File'; %variable to control how profile is generated
 [lambda, Vt, Cp, Neumann_check] = SolveSourcePanels(I, J, U, betaR, numPan, S, rho);
 
 %========== Plot Streamlines ==========%
-[Nxx , Nyy, Vxy, rp, psi, THETA, Cpxy_mask] = PM_streamlines(XC, YC, XB, YB, phiR, S, gamma, U, alphaD, Cp, numPan);
+[Nxx , Nyy, Vxy, theta_pj, psi, THETA, Cpxy_mask] = PM_streamlines(XC, YC, XB, YB, phiR, S, lambda, U, alphaD, Cp, numPan);
 
 figure; hold on; axis equal;
 plot(XB,YB, 'b.', MarkerSize=7);
@@ -36,7 +36,7 @@ legend('Panel Bounds', 'Control Points')
 
 
 XB(end) = [];
-half_x = floor(NumPan/2);
+half_x = floor(numPan/2);
 figure; hold on;
 plot(XB(1:half_x), Cp(1:half_x), 'b');
 plot(XB(half_x:end), Cp(half_x:end)); 

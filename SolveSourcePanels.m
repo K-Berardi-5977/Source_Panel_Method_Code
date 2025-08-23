@@ -1,4 +1,4 @@
-function [lambda, Vt, Cp, Nuemann_check] = SolveSourcePanels(I, J, beta, numPan, S, rho)
+function [lambda, Vt, Cp, Nuemann_check] = SolveSourcePanels(I, J, U, beta, numPan, S, rho)
 
 A = zeros(numPan, numPan); %variable to store Integral terms for linear system of equations
 
@@ -34,6 +34,6 @@ for i = 1:numPan
         source_terms = source_terms + (lambda(j)/(2*pi))*(J(i,j)); %contribution of all other jth panels to tangent velocity of ith panel 
     end
     Vt(i) = U*sin(beta(i)) + source_terms; %surface velocity at ith control point
-    Cp(i) = 1-(V_s(i)/U)^2; %pressure coefficient evaluated at ith control point
+    Cp(i) = 1-(Vt(i)/U)^2; %pressure coefficient evaluated at ith control point
 end
 end
