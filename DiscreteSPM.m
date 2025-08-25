@@ -1,29 +1,27 @@
-%Script to perform source panel method on NACA 0012 form airfoil
-clc; clear;
-%========== Importing NACA 0012 Airfoil Profile and Generating Panels ==========%
+ %========= NUMERICAL SOURCE PANEL METHOD CODE =========%
+clc; 
+clear;
+
+%========== Define Knowns ==========%
 U = 1; %free stream velocity
-c = 1; %chord length
-t_max = 0.12*c; %maximum thickness is 12% of chord length per naca 0012 airfoil profile
-alphad = 11;
-alpha = alphad*(pi/180);
+alphaD = 5; %angle of attack in degrees
+c = 1; %chord length of foil;
+rho = 1.035; %density of air (kg/cubic meter)
 
-[XB, YB, XC, YC, S, betaR, phiR] = loadFoil2(c, t_max, alphad);
+%========== Define Airfoil Profile ==========%
+def_foil = 'Use .dat File'; %variable to control how profile is generated
+
+[XB, YB, XC, YC, phiR, betaR, S, numPan] = LoadPanels(def_foil, c, alphaD);
 
 
+%======= Determine Normal & Tangentential Infuence Coefficients =======%
+[I, J] = SPM_InfluenceCoeff(XC, YC, XB, YB, phiR, S, numPan); %function solving for influence coefficients
 
-%========== Geometric Integral Terms ==========%
+%========== Solve Linear System of Equations ==========%
+[lambda, Vt, Cp, Neumann_check] = SolveSourcePanels(I, J, U, betaR, numPan, S, rho);
 
-[I J] = Calc_Iij(XC, YC, XB, YB, phiR, S); %I=normal integral term, J=tangent integral term
-
-%========== Linear SoE Solution, Pressure Coefficient ==========%
-
-[lambda, sum_lambda, V_s, Cp, NumPan, Gamma] = solvePanels(I, J, betaR, S, U);
-
-disp(sum_lambda) %print the sum of lambda(j)*S(j) --- should be very close to zero
-disp(Gamma)
-%plot of discretized surface + control points
-
-% indices = (V_s <= 0.0001); %finding the points of zero velocity, since we have set normal velocity = 0 already
+%========== Plot Streamlines ==========%
+[Nxx , Nyy, Vxy, theta_pj, psi, THETA, Cpxy_mask] = PM_streamlines(XC, YC, XB, YB, phiR, S, lambda, U, alphaD, Cp, numPan);
 
 figure; hold on; axis equal;
 plot(XB,YB, 'b.', MarkerSize=7);
@@ -38,18 +36,14 @@ legend('Panel Bounds', 'Control Points')
 
 
 XB(end) = [];
-half_x = floor(NumPan/2);
+half_x = floor(numPan/2);
 figure; hold on;
 plot(XB(1:half_x), Cp(1:half_x), 'b');
 plot(XB(half_x:end), Cp(half_x:end)); 
 % plot(x_c, V_s, 'r--');
-title(['Pressure Distribution on Airfoil Surface ($\alpha = ', num2str(alphad), ')$'], 'Interpreter','latex');
+title(['Pressure Distribution on Airfoil Surface ($\alpha = ', num2str(alphaD), ')$'], 'Interpreter','latex');
 xlabel('X-Coordinate of Airfoil');
 ylabel('Coefficient of Pressure (Cp)');
 legend('Top Cp', 'Bottom Cp');
-
-
-
-
 
 
